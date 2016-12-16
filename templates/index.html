@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D3 - Timeseries manipulations </title>
+    <style>
+
+    .line {
+      fill: none;
+      stroke-width: 1px;
+    }
+
+    </style>
+</head>
+<body>
+    <svg width="960" height="500"></svg>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script type="text/javascript">
+        var svg = d3.select("svg"),
+         margin = {top: 20, right: 80, bottom: 30, left: 50},
+         width  = svg.attr("width") - margin.left - margin.right,
+         height = svg.attr("height") - margin.top - margin.bottom,
+         g = svg.append("g").attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+        var parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S");
+        var x = d3.scaleTime().range([0, width]),
+            y = d3.scaleLinear().range([height, 0]),
+            z = d3.scaleOrdinal(d3.schemeCategory10);
+
+        var line = d3.line()
+            .curve(d3.curveBasis)
+            .x(function(d) { return x(d.date); })
+            .y(function(d) { return y(d.value); });
+
+        $.get("http://127.0.0.1:5000/points/", function(data) {
+          data = JSON.parse(data);
+          console.log(data);
+          var max = 0;
+          data.dates = data.dates.map(function(d) {
+            return parseTime(d);
+          });
+
+          x.domain(d3.extent(data.dates));
+          data.signals[0].stroke = "#2ecc71";
+          data.signals[1].stroke = "#3498db";
+          data.signals[2].stroke = "#e67e22";
+          data.signals.map(function(signal) {
+
+            signal.data = [];
+            for (i = 0; i < signal.values.length; i++) {
+              signal.data.push({
+                date: data.dates[i],
+                value: signal.values[i]
+              });
+              if (signal.values[i] > max) {
+                max = signal.values[i];
+              }
+            }
+          });
+
+          y.domain([0, max]);
+
+          g.append("g")
+            .attr("class", "axis axis-x")
+            .attr("transform", "translate(0, " + height + ")")
+            .call(d3.axisBottom(x));
+
+          g.append("g")
+            .attr("class", "axis axis-y")
+            .call(d3.axisLeft(y))
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .attr("fill", "#000")
+            .text("Signal (~)");
+
+
+          var signals = g.selectAll(".signal")
+            .data(data.signals)
+            .enter().append("g")
+              .attr("class", "signal");
+
+          signals.append("path")
+            .attr("class", "line")
+            .attr("d", function(d) { return line(d.data); })
+            .attr("stroke", function(d) {
+              return d.stroke;
+            });
+
+
+
+
+        });
+
+    </script>
+</body>
+</html>
