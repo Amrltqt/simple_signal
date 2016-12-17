@@ -63,7 +63,13 @@
           g.append("g")
             .attr("class", "axis axis-x")
             .attr("transform", "translate(0, " + height + ")")
-            .call(d3.axisBottom(x));
+            .call(d3.axisBottom(x))
+          .append("text")
+            .attr("x", 795)
+            .attr("y", -12)
+            .attr("dy", "0.7em")
+            .attr("fill", "#000")
+            .text("Time (secondes)");
 
           g.append("g")
             .attr("class", "axis axis-y")
@@ -87,9 +93,6 @@
             .attr("stroke", function(d) {
               return d.stroke;
             });
-
-
-
 
         });
 
