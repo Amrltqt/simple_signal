@@ -7,7 +7,11 @@
 
     .line {
       fill: none;
-      stroke-width: 1px;
+      stroke-width: 2px;
+    }
+
+    .line:hover {
+      stroke: red;
     }
 
     </style>
@@ -92,7 +96,8 @@
             .attr("d", function(d) { return line(d.data); })
             .attr("stroke", function(d) {
               return d.stroke;
-            });
+            })
+            .on;
 
         });
 
