@@ -17,7 +17,9 @@
     </style>
 </head>
 <body>
-    <svg width="960" height="500"></svg>
+    <svg width="960" height="500">
+
+    </svg>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://d3js.org/d3.v4.js"></script>
     <script type="text/javascript">
@@ -31,10 +33,19 @@
             y = d3.scaleLinear().range([height, 0]),
             z = d3.scaleOrdinal(d3.schemeCategory10);
 
+
+
+        var text_group = svg.append("g")
+          .attr("transform", "translate(600, 20)")
+          .attr("font-size", "0.71em");
+
+        var line_text = text_group.append("text")
+          .attr("transform", "translate(0, 10)");
+
         var line = d3.line()
-            .curve(d3.curveBasis)
-            .x(function(d) { return x(d.date); })
-            .y(function(d) { return y(d.value); });
+          .curve(d3.curveBasis)
+          .x(function(d) { return x(d.date); })
+          .y(function(d) { return y(d.value); });
 
         $.get("http://127.0.0.1:5000/points/", function(data) {
           data = JSON.parse(data);
@@ -97,7 +108,9 @@
             .attr("stroke", function(d) {
               return d.stroke;
             })
-            .on;
+            .on("mouseover", function(d) {
+              line_text.text(d.name)
+            });
 
         });
 
